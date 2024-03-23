@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Data;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Bloggie.Web.Models.Domain
+namespace Bloggie.Web.Models.ViewModels
 {
-    public class BlogPost
+    public class AddBlogPostRequest
     {
-        public Guid Id { get; set; }
-
         public string Heading { get; set; }
 
         public string Title { get; set; }
@@ -25,7 +22,10 @@ namespace Bloggie.Web.Models.Domain
 
         public bool Visible { get; set; }
 
+        // Dispaly Tags
+        public IEnumerable<SelectListItem> Tags { get; set; }
 
-        public ICollection<Tag> Tags { get; set; }
+        // Collect tag
+        public string[] SelectedTags { get; set; } = Array.Empty<string>();
     }
 }

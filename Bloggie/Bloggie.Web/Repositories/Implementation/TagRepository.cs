@@ -22,7 +22,6 @@ namespace Bloggie.Web.Repositories.Implementation
             return tag;
         }
 
-
         public async Task<IEnumerable<Tag>> GetAllAsync()
         {
             return await context.Tags.ToListAsync();
