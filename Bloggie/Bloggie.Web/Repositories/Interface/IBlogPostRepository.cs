@@ -18,5 +18,8 @@ namespace Bloggie.Web.Repositories.Interface
 
         // Delete tag
         Task<BlogPost?> DeleteAsync(Guid id);
+
+        // 
+        Task<BlogPost?> GetByUrlHandleAsync(string urlHandle);
     }
 }
