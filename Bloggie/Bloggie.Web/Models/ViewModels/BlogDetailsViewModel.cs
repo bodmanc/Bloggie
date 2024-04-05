@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Data;
+﻿using Bloggie.Web.Models.Domain;
 
-namespace Bloggie.Web.Models.Domain
+namespace Bloggie.Web.Models.ViewModels
 {
-    public class BlogPost
+    public class BlogDetailsViewModel
     {
         public Guid Id { get; set; }
 
@@ -27,8 +26,12 @@ namespace Bloggie.Web.Models.Domain
 
         public ICollection<Tag> Tags { get; set; }
 
-        public ICollection<BlogPostLike> Likes { get; set; }
+        public int TotalLikes { get; set; }
 
-        public ICollection<BlogPostComment> Comments { get; set; }
+        public bool Liked { get; set; }
+
+        public string CommentDescription { get; set; }
+        public IEnumerable<BlogComment> Comments { get; set; }
+
     }
 }
