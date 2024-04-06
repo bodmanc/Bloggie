@@ -32,34 +32,30 @@ namespace Bloggie.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View(registerViewModel); // Return the view with validation errors
-            }
-
-            var identityUser = new IdentityUser
-            {
-                UserName = registerViewModel.UserName,
-                Email = registerViewModel.Email
-            };
-
-            var identityResult = await userManager.CreateAsync(identityUser, registerViewModel.Password);
-
-            if (identityResult.Succeeded)
-            {
-                // Assign user role to created user
-                var identityRoleResult = await userManager.AddToRoleAsync(identityUser, "User");
-
-                if (identityRoleResult.Succeeded)
+                var identityUser = new IdentityUser
                 {
-                    // Show success notification
-                    return RedirectToAction("Index", "Home"); // Redirect to the home page or another appropriate page
-                }
-            }
+                    UserName = registerViewModel.UserName,
+                    Email = registerViewModel.Email
+                };
 
-            // If we reach here, registration failed, return the view with error
-            ModelState.AddModelError(string.Empty, "Registration failed. Please try again.");
-            return View(registerViewModel);
+                var identityResult = await userManager.CreateAsync(identityUser, registerViewModel.Password);
+
+                if (identityResult.Succeeded)
+                {
+                    // Assign user role to created user
+                    var identityRoleResult = await userManager.AddToRoleAsync(identityUser, "User");
+
+                    if (identityRoleResult.Succeeded)
+                    {
+                        // Show success notification
+                        return RedirectToAction("Index", "Home"); // Redirect to the home page or another appropriate page
+                    }
+                }
+
+            }
+                return View();
         }
 
         [HttpGet]
@@ -75,20 +71,22 @@ namespace Bloggie.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
-          var signinResult = await signInManager.PasswordSignInAsync(
+            if (ModelState.IsValid)
+            {
+                var signinResult = await signInManager.PasswordSignInAsync(
                 loginViewModel.UserName, loginViewModel.Password, false, false);
 
-            if (signinResult.Succeeded)
-            {
-                if (!string.IsNullOrWhiteSpace(loginViewModel.ReturnUrl))
+                if (signinResult.Succeeded)
                 {
-                    return RedirectToPage(loginViewModel.ReturnUrl);
+                    if (!string.IsNullOrWhiteSpace(loginViewModel.ReturnUrl))
+                    {
+                        return RedirectToPage(loginViewModel.ReturnUrl);
+                    }
+
+                    return RedirectToAction("Index", "Home");
                 }
 
-                return RedirectToAction("Index", "Home");
             }
-
-            // show errors
             return View();
         }
 
