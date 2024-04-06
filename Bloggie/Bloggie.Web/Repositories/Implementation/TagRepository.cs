@@ -22,9 +22,47 @@ namespace Bloggie.Web.Repositories.Implementation
             return tag;
         }
 
-        public async Task<IEnumerable<Tag>> GetAllAsync()
+        public async Task<IEnumerable<Tag>> GetAllAsync(
+            string? searchQuery, 
+            string? sortBy, 
+            string? sortDirection,
+            int pageSize = 1,
+            int pageNumber = 100)
         {
-            return await context.Tags.ToListAsync();
+            var query = context.Tags.AsQueryable();
+
+            // Filtering
+            if (string.IsNullOrWhiteSpace(searchQuery) == false)
+            {
+                query = query.Where(x => x.Name.Contains(searchQuery) ||
+                                         x.DisplayName.Contains(searchQuery));
+            }
+
+            // Sorting
+            if (string.IsNullOrWhiteSpace(sortBy) == false)
+            {
+                var isDesc = string.Equals(sortDirection, "Desc", StringComparison.OrdinalIgnoreCase);
+
+                if (string.Equals(sortBy, "Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = isDesc ? query.OrderByDescending(x => x.Name) : query.OrderBy(x => x.Name);
+                }
+
+                if(string.Equals(sortBy, "DisplayName", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = isDesc ? query.OrderByDescending(x => x.DisplayName) : query.OrderBy(x => x.DisplayName);
+                }
+
+            }
+
+            // Pagination
+            // Skip 0 Take 5 -> Page 1 of 5 Results
+            var skipResults = (pageNumber - 1) * pageSize;
+            query = query.Skip(skipResults).Take(pageSize);
+
+            // Return result
+            return await query.ToListAsync();
+            //return await context.Tags.ToListAsync();
         }
 
         public Task<Tag?> GetAsync(Guid id)
@@ -62,5 +100,12 @@ namespace Bloggie.Web.Repositories.Implementation
 
             return null;
         }
+
+        public async Task<int> CountAsync()
+        {
+           return await context.Tags.CountAsync();
+        }
+
+       
     }
 }
